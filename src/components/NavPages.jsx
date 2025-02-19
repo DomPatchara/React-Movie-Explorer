@@ -1,8 +1,10 @@
 import React from 'react'
 
-const NavPages = ({numPage, setNumPage}) => {
+const NavPages = ({numPage, setNumPage, totalPages}) => {
   return (
     <div className='w-full h-full flex justify-center items-center gap-5'>
+        <p className='text-gray-200 absolute left-[25%]'> Page {numPage} of {totalPages}</p>
+        
         { numPage !== 1 && 
          <button 
             onClick={() => setNumPage(numPage - 1)} 

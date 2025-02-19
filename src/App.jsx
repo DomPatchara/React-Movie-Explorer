@@ -41,6 +41,7 @@ App = () => {
 
   // set page
   const [numPage, setNumPage] = useState(1)
+  const [totalPages, setTotalPages] = useState()
 
   const fetchMovies = async (query = '') => {
 
@@ -68,6 +69,7 @@ App = () => {
       }
 
       setMovieList(data.results || [])
+      setTotalPages(data.total_pages)
 
     } catch (error) {
       console.log(`Error fetching movies: ${error}`);
@@ -109,7 +111,7 @@ App = () => {
                 </ul>
               )}
 
-              <NavPages numPage={numPage} setNumPage={setNumPage}/>
+              <NavPages numPage={numPage} setNumPage={setNumPage} totalPages={totalPages}/>
 
             </section>
           </div>
