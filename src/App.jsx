@@ -5,6 +5,7 @@ import Spinner from './components/Spinner';
 import MovieCard from './components/MovieCard';
 import { useDebounce } from 'react-use';
 import NavPages from './components/NavPages';
+import Switch from './components/Switch';
 
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
@@ -22,6 +23,7 @@ const API_OPTIONS = {
 const 
 App = () => {
 
+  const [active, setActive] = useState('movie')
   const [searchTerm, setSearchTerm] = useState('');
 
   const [errorMessage, setErrorMessage] = useState('');
@@ -29,20 +31,22 @@ App = () => {
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
 
 
   // debounce prevent making too many API requests
   // by waiting for the user to stop typing for 500ms
   
-  // ประมาณว่ารอให้ user พิมพ์จบก่อน หลัง 500ms ให้ API request 
-  useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm])
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
+  useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]) // ประมาณว่ารอให้ user พิมพ์จบก่อน หลัง 500ms ให้ API request 
+
+  const [trendingMovies,setTrendingMovies] = useState([]) // set TrendingMovie Top 10
 
 
   // set page
   const [numPage, setNumPage] = useState(1)
   const [totalPages, setTotalPages] = useState()
 
+  // ----- Fetch Data -------- //
   const fetchMovies = async (query = '') => {
 
     setIsLoading(true);
@@ -50,14 +54,16 @@ App = () => {
 
     try {
       const endpoint = query
-      ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}&page=${numPage}`
-      : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc&page=${numPage}`;
+      ? `${API_BASE_URL}/search/${active}?query=${encodeURIComponent(query)}&page=${numPage}`   
+      :`${API_BASE_URL}/discover/${active}?sort_by=vote_count.desc&page=${numPage}`;
+
 
       const res = await fetch(endpoint, API_OPTIONS);
       
       if(!res.ok) {    // .ok คือ HTTP response status is in the range of 200-299   ถ้าออกนอกช่วง ( eg. 404, 500 ) ---> res.ok = false ทันที
         throw new Error('Failed to fetch movies');  // "block" flow or furture execution โค้ดอื่นๆ + throw message error
       }
+
 
       const data = await res.json()
       console.log(data);
@@ -79,9 +85,48 @@ App = () => {
     }
   }
 
+  const trending = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+
+    try {
+      const endpoint = `${API_BASE_URL}/discover/${active}?sort_by=popularity.desc`
+
+      const res = await fetch(endpoint, API_OPTIONS)
+      const data = await res.json()
+      
+      if(!res.ok) {
+        throw new Error("Failed to fetch trending")
+      }
+
+      if(!data.results || data.results.length === 0) {
+        throw new Error("No trending movie found!")
+      }
+
+      setTrendingMovies(data.results.slice(0, 10)) // select only 10 Arrays.
+
+    } catch (error) {
+      console.log(`Error fetching movies: ${error}`);
+      setErrorMessage('Error fetching movies. Please try again later.')
+
+    } finally {
+      setIsLoading(false)
+    }
+  }
+  
+
   useEffect(() => {
-    fetchMovies(debouncedSearchTerm, numPage);
-  }, [debouncedSearchTerm, numPage])
+    fetchMovies(debouncedSearchTerm);
+  }, [debouncedSearchTerm, numPage, active])
+
+  useEffect(() => {
+    trending();
+    setSearchTerm('');
+  } , [active])
+
+  useEffect(() => {
+    console.log(trendingMovies)
+  },[trendingMovies])
 
   return (
     <main>
@@ -90,12 +135,33 @@ App = () => {
             
             <header>
               <img src="../public/hero.png" alt="Hero-banner" />
-              <h1>Find <span className='text-gradient'> Movies </span> You'll enjoy Without the Hassle</h1>
+              <h1>Find <span className='text-gradient'> Movies & TV Shows </span> You'll enjoy Without the Hassle</h1>
               <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
             </header>
 
+            <Switch active={active} setActive={setActive}/>
+
+            {trendingMovies.length > 0 && (
+              <section className='trending'>
+
+                <h2 className='mb-5'>
+                  {active === 'movie' ? 'Trending Movies' : 'Trending TV Shows'}
+                </h2>
+
+                <ul>
+                  {trendingMovies.map((movie, i) => (
+                    <li key={movie.id}>
+                      <p>{i + 1}</p>
+                      <img src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} alt={movie.title} />
+                    </li>
+                  ))}
+                </ul>
+
+              </section>
+            )}
+
             <section className='all-movies'>
-              <h2 className='mt-[20px]'>All Movies</h2>
+              <h2 className='mt-[20px]'>{ active === 'movie' ? 'All Movies' : 'TV Shows'}</h2>
 
               { isLoading ? (
                 <div className='w-full h-full flex justify-center items-center'>
