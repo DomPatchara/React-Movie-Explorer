@@ -1,6 +1,6 @@
 import React from 'react'
 
-const NavPages = ({numPage, setNumPage, totalPages}) => {
+const NumPages = ({numPage, setNumPage, totalPages}) => {
   return (
     <div className='w-full h-full flex justify-center items-center gap-5'>
         <p className='text-gray-200 absolute left-[25%]'> Page {numPage} of {totalPages}</p>
@@ -22,4 +22,4 @@ const NavPages = ({numPage, setNumPage, totalPages}) => {
   )
 }
 
-export default NavPages
+export default NumPages

@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react'
 import Spinner from './components/Spinner';
 import MovieCard from './components/MovieCard';
 import { useDebounce } from 'react-use';
-import NavPages from './components/NavPages';
+import NumPages from './components/NumPages';
 import Switch from './components/Switch';
+import Navbar from './components/Navbar';
 
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
@@ -23,13 +24,14 @@ const API_OPTIONS = {
 const 
 App = () => {
 
-  const [active, setActive] = useState('movie')
+  const [active, setActive] = useState('movie') // Toggle movie <--> tv
+
   const [searchTerm, setSearchTerm] = useState('');
 
   const [errorMessage, setErrorMessage] = useState('');
 
   const [movieList, setMovieList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Loading Page // 
 
 
 
@@ -42,12 +44,15 @@ App = () => {
   const [trendingMovies,setTrendingMovies] = useState([]) // set TrendingMovie Top 10
 
 
-  // set page
+  // ----- Set pages ---------//
   const [numPage, setNumPage] = useState(1)
   const [totalPages, setTotalPages] = useState()
 
+
   // ----- Fetch Data -------- //
-  const fetchMovies = async (query = '') => {
+
+  // ------ Fetch All Movies -------//
+  const fetchMovies = async (query) => {
 
     setIsLoading(true);
     setErrorMessage('');
@@ -84,8 +89,59 @@ App = () => {
       setIsLoading(false);
     }
   }
+ // handle Select Genrces // 
+ const [isGenres, setIsGenres] = useState(false);
+ const [genreId, setGenreId] = useState(null);
+ const [genreName, setGenreName] = useState([])
 
-  const trending = async () => {
+ const [showGenres, setShowGenres] = useState(false);
+
+
+ const handleSelectGenres = (numGenreId, name) => {
+
+    setGenreId(numGenreId); // set select Genre ID
+    setGenreName(name)
+    setNumPage(1); // reset to first page
+    setIsGenres(true); // set ถ้าต้องการเลือกประเภทหนัง
+    setShowGenres(false); // เลือกประเภทหนังแล้ว ให้ปิดเมนูทิ้ง
+    setMovieList([]); // clear old fetch movie
+}
+
+  // ------ Fetch Movies By Genrces -- //
+  const fetchByGenres = async (genreId) => {
+      setErrorMessage('')
+
+      setIsLoading(true)
+    try {
+      const endpoint = `${API_BASE_URL}/discover/${active}?sort_by=vote_count.desc&page=${numPage}&with_genres=${genreId}`;
+      const res = await fetch(endpoint, API_OPTIONS);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error('Respone Error')
+      }
+
+      if (!data.results || data.results.length === 0) {
+        setErrorMessage( data.Error || 'No Genre founded !')
+        setMovieList([])
+        return;
+      }
+
+      setMovieList(data.results)
+      setTotalPages(data.total_pages)
+      console.log(data)
+      console.log(res)
+
+
+    } catch(error) {
+      console.log(`Error fetching movies: ${error}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+// -------- Fetch Trending -------- //
+  const fetchTrending = async () => {
     setIsLoading(true)
     setErrorMessage('')
 
@@ -115,25 +171,49 @@ App = () => {
   }
   
 
+  // add Movie & Tv gerne // 
+  //https://api.themoviedb.org/3/genre/movie/list
+  //https://api.themoviedb.org/3/genre/tv/list
+
+
+
+  // -------- useEffect -------- //
   useEffect(() => {
-    fetchMovies(debouncedSearchTerm);
-  }, [debouncedSearchTerm, numPage, active])
+    if (isGenres && genreId) {
+      fetchByGenres(genreId);
+    } else {
+      fetchMovies(debouncedSearchTerm);
+    }
+  }, [debouncedSearchTerm, numPage, active, isGenres, genreId])
+
+  
 
   useEffect(() => {
-    trending();
+    fetchTrending();
     setSearchTerm('');
   } , [active])
 
-  useEffect(() => {
-    console.log(trendingMovies)
-  },[trendingMovies])
+  // useEffect(()=> {
+  //   fetchByGenres();
+  // },[])
+
 
   return (
     <main>
-        <div className="pattern overflow-x-hidden">
+
+        <div className="pattern ">
           <div className="wrapper">
             
             <header>
+              <Navbar
+                API_BASE_URL={API_BASE_URL} 
+                API_OPTIONS={API_OPTIONS}
+                active={active}
+                setActive={setActive}
+                showGenres={showGenres}
+                setShowGenres={setShowGenres}
+                handleSelectGenres = {handleSelectGenres}
+              />
               <img src="../public/hero.png" alt="Hero-banner" />
               <h1>Find <span className='text-gradient'> Movies & TV Shows </span> You'll enjoy Without the Hassle</h1>
               <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
@@ -143,7 +223,7 @@ App = () => {
 
             {trendingMovies.length > 0 && (
               <section className='trending'>
-
+                
                 <h2 className='mb-5'>
                   {active === 'movie' ? 'Trending Movies' : 'Trending TV Shows'}
                 </h2>
@@ -161,7 +241,12 @@ App = () => {
             )}
 
             <section className='all-movies'>
-              <h2 className='mt-[20px]'>{ active === 'movie' ? 'All Movies' : 'TV Shows'}</h2>
+              <div className='flex flex-row items-center gap-9'>
+                <h2>{ active === 'movie' ? 'All Movies' : 'TV Shows'}</h2>
+
+                <p className='text-white px-5 py-2 bg-blue-800/50 backdrop-blur-3xl rounded-4xl'>{genreName}</p>
+                
+              </div>
 
               { isLoading ? (
                 <div className='w-full h-full flex justify-center items-center'>
@@ -177,7 +262,7 @@ App = () => {
                 </ul>
               )}
 
-              <NavPages numPage={numPage} setNumPage={setNumPage} totalPages={totalPages}/>
+              <NumPages numPage={numPage} setNumPage={setNumPage} totalPages={totalPages}/>
 
             </section>
           </div>
