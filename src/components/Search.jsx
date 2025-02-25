@@ -1,9 +1,7 @@
 import React from 'react'
 
 
-
-const Search = ({ searchTerm, setSearchTerm }) => {
-
+const Search = ({ searchTerm, setSearchTerm, searchRef}) => {
 
   return (
     <div className="search">
@@ -11,8 +9,9 @@ const Search = ({ searchTerm, setSearchTerm }) => {
             <img src="search.svg" alt="search" />
 
             <input 
+                ref={searchRef}
                 type="text" 
-                placeholder='Search through thoundsands of movies'
+                placeholder='Find your next favorite'
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
