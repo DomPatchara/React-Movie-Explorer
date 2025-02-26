@@ -1,6 +1,5 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect, useCallback } from 'react'
 import Search from './components/Search'
-import { useState, useEffect } from 'react'
 import Spinner from './components/Spinner';
 import MovieCard from './components/MovieCard';
 import { useDebounce } from 'react-use';
@@ -8,6 +7,8 @@ import NumPages from './components/NumPages';
 import Switch from './components/Switch';
 import Navbar from './components/Navbar';
 import TrendingMovie from './components/TrendingMovie';
+import axios, { Axios } from 'axios';
+
 
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
@@ -50,11 +51,11 @@ const App = () => {
         // 1. Check ว่าหนังโปรดเราอยู่ใน FavoriteMovies หรือยัง
         const CheckMoviesInList = prev.some(fav => fav.title === movie.title);
 
-        // 2. ถ้าอยู่ ให้ตัดออก
+        // 2. Remove : ถ้ามีอยู่แล้วอยู่ ให้ตัดออก
         if (CheckMoviesInList) {
           return prev.filter(fav => fav.title !== movie.title)
         } else {
-          // 3. ถ้าไม่ให้แอดเพิ่ม
+        // 3. Add : ถ้าไม่มี ให้แอดเพิ่ม
           return [...prev, movie];
         }
       }
@@ -67,14 +68,40 @@ const App = () => {
     // by waiting for the user to stop typing for 500ms
     
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
-    useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]) // ประมาณว่ารอให้ user พิมพ์จบก่อน หลัง 500ms ให้ API request 
+    useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]) // ประมาณว่ารอให้ user พิมพ์จบก่อนหลัง 500ms ให้ API request 
 
     const [trendingMovies,setTrendingMovies] = useState([]) // set TrendingMovie Top 10
 
 
-    // ----- Set numpages ---------//
+     // ---- Set numpages ------//
     const [numPage, setNumPage] = useState(1)
     const [totalPages, setTotalPages] = useState()
+
+     // handle Select Genrces // 
+    const [isGenres, setIsGenres] = useState(false);
+    const [genreId, setGenreId] = useState(null);
+    const [genreName, setGenreName] = useState([]);
+    const [showGenres, setShowGenres] = useState(false);
+
+  
+    const handleSelectGenres = useCallback((numGenreId, name) => {   // useCallback --> ลดการ re-create function โดยไม่จำเป็น
+      // Scroll to top
+      document.getElementById('all-movies')?.scrollIntoView({ behavior: 'smooth' });
+    
+      // Update State
+      setGenreId(numGenreId);
+      setGenreName(name);
+      setNumPage(1);
+      setIsGenres(true);
+      setShowGenres(false);
+      setMovieList([]);
+    
+    }, []);
+    
+    // Check ว่ามีการ re-create function ไหม
+    useEffect(()=>{    
+      console.log(handleSelectGenres);
+    }, [handleSelectGenres])
 
 
     // ------------------------------------------------------------------Fetch Data ---------------------------------------------------------------------- //
@@ -92,14 +119,13 @@ const App = () => {
 
 
         const res = await fetch(endpoint, API_OPTIONS);
+
+        const data = await res.json()
+        console.log(data);
         
         if(!res.ok) {    // .ok คือ HTTP response status is in the range of 200-299   ถ้าออกนอกช่วง ( eg. 404, 500 ) ---> res.ok = false ทันที
           throw new Error('Failed to fetch movies');  // "block" flow or furture execution โค้ดอื่นๆ + throw message error
         }
-
-
-        const data = await res.json()
-        console.log(data);
         
         if(!data.results || data.results.length === 0 ) {
           setErrorMessage( data.Error || 'Failed to fetch movies');
@@ -118,40 +144,13 @@ const App = () => {
       }
     }
 
-  // handle Select Genrces // 
-  const [isGenres, setIsGenres] = useState(false);
-  const [genreId, setGenreId] = useState(null);
-  const [genreName, setGenreName] = useState([]);
-  const [showGenres, setShowGenres] = useState(false);
-
-
-  const handleSelectGenres = (numGenreId, name) => {
-
-      // first Scroll
-      document.getElementById('all-movies')?.scrollIntoView({ behavior: 'smooth' });
-
-      // then update State
-      setGenreId(numGenreId); // set select Genre ID
-      setGenreName(name)
-      setNumPage(1); // reset to first page
-      setIsGenres(true); // set ถ้าต้องการเลือกประเภทหนัง
-      setShowGenres(false); // เลือกประเภทหนังแล้ว ให้ปิดเมนูทิ้ง
-      setMovieList([]); // clear old fetch movie
-      
-  }
-
     // ------ Fetch Movies By Genrces -- //
     const fetchByGenres = async (genreId) => {
         setErrorMessage('')
         setIsLoading(true)
       try {
         const endpoint = `${API_BASE_URL}/discover/${active}?sort_by=vote_count.desc&page=${numPage}&with_genres=${genreId}`;
-        const res = await fetch(endpoint, API_OPTIONS);
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error('Respone Error')
-        }
+        const {data} = await axios.get(endpoint, API_OPTIONS);  // use Axios ไม่ต้อง manual check res.ok แล้ว
 
         if (!data.results || data.results.length === 0) {
           setErrorMessage( data.Error || 'No Genre founded !')
@@ -172,21 +171,14 @@ const App = () => {
       }
     }
 
-  // -------- Fetch Trending -------- //
+   // ------ Fetch Trending Movie/TV ---- //
     const fetchTrending = async () => {
       setIsLoading(true)
       setErrorMessage('')
 
       try {
-        const endpoint = `${API_BASE_URL}/discover/${active}?sort_by=popularity.desc`
-
-        const res = await fetch(endpoint, API_OPTIONS)
-        const data = await res.json()
+        const { data } = await axios.get(`${API_BASE_URL}/discover/${active}?sort_by=popularity.desc`, API_OPTIONS)
         
-        if(!res.ok) {
-          throw new Error("Failed to fetch trending")
-        }
-
         if(!data.results || data.results.length === 0) {
           throw new Error("No trending movie found!")
         }
@@ -220,7 +212,7 @@ const App = () => {
     } , [active])
 
     useEffect(() => {
-        console.log(favoriteMovies);
+        console.log("Your Favorite Movies:", favoriteMovies);
     },[favoriteMovies])
 
     return (
