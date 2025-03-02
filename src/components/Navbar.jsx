@@ -1,20 +1,21 @@
 import React, { useEffect} from 'react'
 import { useState } from 'react'
+import apiClient from '../API';
 
 
 
 
 
-const Navbar = ({API_BASE_URL, API_OPTIONS, active, setActive,  setShowGenres, showGenres, handleSelectGenres, focusInput}) => {
+const Navbar = ({active, setActive,  setShowGenres, showGenres, handleSelectGenres, focusInput}) => {
 
 
     // ----------- Fetch All Genres ---------------------------------//
     const [genres, setGenres] = useState([]);
 
     const fetchgenre = async () => {
+        const endpoint = `/genre/${active}/list`
         try {
-            const endpoint = `${API_BASE_URL}/genre/${active}/list`;
-            const res = await fetch(endpoint, API_OPTIONS)
+            const res = await apiClient.get(endpoint)
             const data = await res.json()
             console.log(data);
             console.log(res);

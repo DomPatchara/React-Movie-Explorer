@@ -7,7 +7,8 @@ import NumPages from './components/NumPages';
 import Switch from './components/Switch';
 import Navbar from './components/Navbar';
 import TrendingMovie from './components/TrendingMovie';
-import axios, { Axios } from 'axios';
+import axios from 'axios';
+import apiClient from './API';
 
 
 
@@ -106,7 +107,7 @@ const App = () => {
 
     // ------------------------------------------------------------------Fetch Data ---------------------------------------------------------------------- //
 
-    // ------ Fetch All Movies -------//
+    // ------ Fetch All Movies ( Old Way ) -------//
     const fetchMovies = async (query) => {
 
       setIsLoading(true);
@@ -117,9 +118,7 @@ const App = () => {
         ? `${API_BASE_URL}/search/${active}?query=${encodeURIComponent(query)}&page=${numPage}`   
         :`${API_BASE_URL}/discover/${active}?sort_by=vote_count.desc&page=${numPage}`;
 
-
         const res = await fetch(endpoint, API_OPTIONS);
-
         const data = await res.json()
         console.log(data);
         
@@ -144,14 +143,17 @@ const App = () => {
       }
     }
 
-    // ------ Fetch Movies By Genrces -- //
+    // ------ Fetch Movies By Genrces ( New Way ) -- //
     const fetchByGenres = async (genreId) => {
         setErrorMessage('')
         setIsLoading(true)
-      try {
-        const endpoint = `${API_BASE_URL}/discover/${active}?sort_by=vote_count.desc&page=${numPage}&with_genres=${genreId}`;
-        const {data} = await axios.get(endpoint, API_OPTIONS);  // use Axios ไม่ต้อง manual check res.ok แล้ว
 
+        const endpoint = `/discover/${active}?sort_by=vote_count.desc&page=${numPage}&with_genres=${genreId}`;
+      try {
+        
+        const { data } = await apiClient.get(endpoint)  // await คือรอ Server Response ข้อมูลมา ถึงจะ flow code ต่อ
+        console.log("Response:", data)       // Check Respone
+       
         if (!data.results || data.results.length === 0) {
           setErrorMessage( data.Error || 'No Genre founded !')
           setMovieList([])
@@ -160,10 +162,7 @@ const App = () => {
 
         setMovieList(data.results)
         setTotalPages(data.total_pages)
-        console.log(data)
-        console.log(res)
-
-
+        
       } catch(error) {
         console.log(`Error fetching movies: ${error}`);
       } finally {
@@ -171,13 +170,17 @@ const App = () => {
       }
     }
 
-   // ------ Fetch Trending Movie/TV ---- //
+   // ------ Fetch Trending Movie/TV ( New Way ) ---- //
     const fetchTrending = async () => {
       setIsLoading(true)
       setErrorMessage('')
 
+      const endpoint = `/discover/${active}?sort_by=popularity.desc`
+
       try {
-        const { data } = await axios.get(`${API_BASE_URL}/discover/${active}?sort_by=popularity.desc`, API_OPTIONS)
+        const response = await apiClient.get(endpoint);
+        const { data } = response;
+        console.log("Response:", data) 
         
         if(!data.results || data.results.length === 0) {
           throw new Error("No trending movie found!")
