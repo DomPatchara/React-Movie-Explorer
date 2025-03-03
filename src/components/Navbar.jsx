@@ -9,40 +9,33 @@ import apiClient from '../API';
 const Navbar = ({active, setActive,  setShowGenres, showGenres, handleSelectGenres, focusInput}) => {
 
 
-    // ----------- Fetch All Genres ---------------------------------//
+    // ----------- Fetch All List Genres ----------------------//
     const [genres, setGenres] = useState([]);
 
     const fetchgenre = async () => {
         const endpoint = `/genre/${active}/list`
         try {
             const res = await apiClient.get(endpoint)
-            const data = await res.json()
-            console.log(data);
-            console.log(res);
-
-            if(!res.ok) {
-                throw new Error("Failed to fetch genre")
-              }
-        
+            const data = res.data
+            console.log("Response",res);
+            console.log("Genres:",data);
+            
             if(!data.genres || data.genres.length === 0) {
                  throw new Error("No Genre found!")
             }
             setGenres(data.genres)
 
         } catch(error) {
-            console.log(`Error fetching genre: ${error}`);
-        } finally {
-        
-        }
+            console.error("Error fetching genre:", error );
+        } 
     }
 
     useEffect(()=>{
         fetchgenre();
     },[active])
 
-    //--------------------------------------------------------------//
 
-    // ---- Set Show/Close Navbar with Scrolling --------------//
+    // ----------- Set Show/Close Navbar with Scrolling --------------//
     const [showNavbar, setShowNavbar] = useState(true);
     const [lastScroll, setLastScroll] = useState(0)
 

@@ -1,6 +1,6 @@
 import React from 'react'
-import { useState } from 'react'
 
+// Component ที่เปลี่ยน Movies <--> TV Shows
 const Switch = ({active, setActive}) => {
 
   return (

@@ -1,6 +1,8 @@
 import React from 'react'
 
 const NumPages = ({numPage, setNumPage, totalPages}) => {
+
+  // Add < 1 2 3 4 ... 7 8 9 10 > 
   return (
     <div className='w-full h-full flex justify-center items-center gap-5'>
         <p className='text-gray-200 absolute left-[25%]'> Page {numPage} of {totalPages}</p>

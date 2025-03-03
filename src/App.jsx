@@ -1,14 +1,11 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import Search from './components/Search'
-import Spinner from './components/Spinner';
-import MovieCard from './components/MovieCard';
 import { useDebounce } from 'react-use';
-import NumPages from './components/NumPages';
 import Switch from './components/Switch';
 import Navbar from './components/Navbar';
 import TrendingMovie from './components/TrendingMovie';
-import axios from 'axios';
 import apiClient from './API';
+import AllMovies from './components/AllMoives'
 
 
 
@@ -44,24 +41,6 @@ const App = () => {
     const [errorMessage, setErrorMessage] = useState('');
 
     const [movieList, setMovieList] = useState([]);
-    const [favoriteMovies, setFavoriteMovies] = useState([]);
-
-    const handleAddFavorite = (movie) =>{
-      setFavoriteMovies(prev => {
-
-        // 1. Check ว่าหนังโปรดเราอยู่ใน FavoriteMovies หรือยัง
-        const CheckMoviesInList = prev.some(fav => fav.title === movie.title);
-
-        // 2. Remove : ถ้ามีอยู่แล้วอยู่ ให้ตัดออก
-        if (CheckMoviesInList) {
-          return prev.filter(fav => fav.title !== movie.title)
-        } else {
-        // 3. Add : ถ้าไม่มี ให้แอดเพิ่ม
-          return [...prev, movie];
-        }
-      }
-      )
-    }
 
     const [isLoading, setIsLoading] = useState(false); // Loading Page // 
 
@@ -81,7 +60,7 @@ const App = () => {
      // handle Select Genrces // 
     const [isGenres, setIsGenres] = useState(false);
     const [genreId, setGenreId] = useState(null);
-    const [genreName, setGenreName] = useState([]);
+    const [genreName, setGenreName] = useState('');
     const [showGenres, setShowGenres] = useState(false);
 
   
@@ -143,7 +122,7 @@ const App = () => {
       }
     }
 
-    // ------ Fetch Movies By Genrces ( New Way ) -- //
+    // ------ Fetch Movies By GenrcesID ( New Way ) -- //
     const fetchByGenres = async (genreId) => {
         setErrorMessage('')
         setIsLoading(true)
@@ -152,7 +131,7 @@ const App = () => {
       try {
         
         const { data } = await apiClient.get(endpoint)  // await คือรอ Server Response ข้อมูลมา ถึงจะ flow code ต่อ
-        console.log("Response:", data)       // Check Respone
+        console.log("Response:", data)       // Check Response
        
         if (!data.results || data.results.length === 0) {
           setErrorMessage( data.Error || 'No Genre founded !')
@@ -198,7 +177,7 @@ const App = () => {
     }
     
 
-    // ------------------------------------------------------------------------- useEffect -------------------------------------------------- //
+    // ------------------------------------------------------------------------- useEffect ------------------------------------------------------------- //
     useEffect(() => {
       if (isGenres && genreId) {
         fetchByGenres(genreId);
@@ -213,10 +192,6 @@ const App = () => {
       fetchTrending();
       setSearchTerm('');
     } , [active])
-
-    useEffect(() => {
-        console.log("Your Favorite Movies:", favoriteMovies);
-    },[favoriteMovies])
 
     return (
       <main>
@@ -244,36 +219,15 @@ const App = () => {
 
               <TrendingMovie trendingMovies={trendingMovies} active={active}/>
 
-              <section className='all-movies scroll-mt-10' id='all-movies'>
-
-                <div className='flex flex-row items-center gap-9'>
-                  <h2>{ active === 'movie' ? 'All Movies' : 'TV Shows'}</h2>
-                { genreId &&
-                  <p className='text-white px-5 py-2 bg-blue-800/50 backdrop-blur-3xl rounded-4xl'>{genreName}</p>
-                } 
-                </div>
-
-                { isLoading ? (
-                  <div className='w-full h-full flex justify-center items-center'>
-                    <Spinner/>
-                  </div>
-                ) : errorMessage ? (
-                  <p className='text-red-500'>{errorMessage}</p>
-                ) : (
-                  <ul>
-                    {movieList.map((movie) => (
-                      <MovieCard 
-                        key={movie.id} 
-                        movie={movie} 
-                        handleAddFavorite={handleAddFavorite} 
-                        favoriteMovies={favoriteMovies}/>
-                    ))}
-                  </ul>
-                )}
-
-                <NumPages numPage={numPage} setNumPage={setNumPage} totalPages={totalPages}/>
-
-              </section>
+              <AllMovies 
+                movieList={movieList} 
+                active={active} 
+                genreName={genreName} 
+                errorMessage={errorMessage}
+                numPage ={numPage}
+                totalPages= {totalPages}
+                setNumPage={setNumPage}
+                isLoading={isLoading}/>
 
             </div>
           </div>
