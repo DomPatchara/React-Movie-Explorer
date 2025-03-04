@@ -6,11 +6,12 @@ import apiClient from '../API';
 
 
 
-const Navbar = ({active, setActive,  setShowGenres, showGenres, handleSelectGenres, focusInput}) => {
+const Navbar = ({active, setActive,  setShowGenres, showGenres, handleClick, focusInput}) => {
 
 
     // ----------- Fetch All List Genres ----------------------//
     const [genres, setGenres] = useState([]);
+    const [showNavbar, setShowNavbar] = useState(true);
 
     const fetchgenre = async () => {
         const endpoint = `/genre/${active}/list`
@@ -36,7 +37,6 @@ const Navbar = ({active, setActive,  setShowGenres, showGenres, handleSelectGenr
 
 
     // ----------- Set Show/Close Navbar with Scrolling --------------//
-    const [showNavbar, setShowNavbar] = useState(true);
     const [lastScroll, setLastScroll] = useState(0)
 
 
@@ -44,6 +44,7 @@ const Navbar = ({active, setActive,  setShowGenres, showGenres, handleSelectGenr
     useEffect(() => {
 
         const handleScrollNav = () => {
+
             // Scroll down
             if (window.scrollY > lastScroll) {
 
@@ -91,7 +92,7 @@ const Navbar = ({active, setActive,  setShowGenres, showGenres, handleSelectGenr
                     <li key={i}>
                         <a  
                             className='text-base  text-blue-100/80 whitespace-nowrap cursor-pointer hover:text-white md:text-[18px]'
-                            onClick={() => handleSelectGenres(genre.id, genre.name)}
+                            onClick={() => handleClick(genre.id, genre.name)}
                         >
                             {genre.name}
                         </a>

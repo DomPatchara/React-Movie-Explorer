@@ -23,6 +23,9 @@ const API_OPTIONS = {
 
 const App = () => {
 
+    const [movieList, setMovieList] = useState([]); // set All Movies
+    const [trendingMovies,setTrendingMovies] = useState([]) // set TrendingMovie Top 10
+
     const [active, setActive] = useState('movie') // Toggle movie <--> tv
 
     // ---------------- Focus Input Search -------------------- //
@@ -36,22 +39,14 @@ const App = () => {
 
     const [searchTerm, setSearchTerm] = useState('');
 
-    //----------------------------------------------------- //
-
-    const [errorMessage, setErrorMessage] = useState('');
-
-    const [movieList, setMovieList] = useState([]);
-
-    const [isLoading, setIsLoading] = useState(false); // Loading Page // 
-
     // debounce prevent making too many API requests
-    // by waiting for the user to stop typing for 500ms
-    
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
     useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]) // ประมาณว่ารอให้ user พิมพ์จบก่อนหลัง 500ms ให้ API request 
 
-    const [trendingMovies,setTrendingMovies] = useState([]) // set TrendingMovie Top 10
+    //----------------------------------------------------- //
 
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false); // Loading Page // 
 
      // ---- Set numpages ------//
     const [numPage, setNumPage] = useState(1)
@@ -62,12 +57,9 @@ const App = () => {
     const [genreId, setGenreId] = useState(null);
     const [genreName, setGenreName] = useState('');
     const [showGenres, setShowGenres] = useState(false);
-
   
     const handleSelectGenres = useCallback((numGenreId, name) => {   // useCallback --> ลดการ re-create function โดยไม่จำเป็น
-      // Scroll to top
-      document.getElementById('all-movies')?.scrollIntoView({ behavior: 'smooth' });
-    
+     
       // Update State
       setGenreId(numGenreId);
       setGenreName(name);
@@ -82,6 +74,17 @@ const App = () => {
     useEffect(()=>{    
       console.log(handleSelectGenres);
     }, [handleSelectGenres])
+
+    const handleClick = async(numGenreId, name) => {
+      await fetchByGenres();
+      handleSelectGenres(numGenreId, name);
+
+      setTimeout(() => {
+        document.getElementById("all-movies")?.scrollIntoView({behavior: "smooth"});
+      }, 500);
+
+    }
+
 
 
     // ------------------------------------------------------------------Fetch Data ---------------------------------------------------------------------- //
@@ -165,7 +168,8 @@ const App = () => {
           throw new Error("No trending movie found!")
         }
 
-        setTrendingMovies(data.results.slice(0, 10)) // select only 10 Arrays.
+        const Top10 = data.results.slice(0, 10)
+        setTrendingMovies(Top10) // select only 10 Arrays.
 
       } catch (error) {
         console.log(`Error fetching movies: ${error}`);
@@ -201,13 +205,11 @@ const App = () => {
               
               <header>
                 <Navbar
-                  API_BASE_URL={API_BASE_URL} 
-                  API_OPTIONS={API_OPTIONS}
                   active={active}
                   setActive={setActive}
                   showGenres={showGenres}
                   setShowGenres={setShowGenres}
-                  handleSelectGenres = {handleSelectGenres}
+                  handleClick = {handleClick}
                   focusInput={focusInput}
                 />
                 <img src="/hero.png" alt="Hero-banner" className='lg:mt-10'/>
@@ -227,7 +229,8 @@ const App = () => {
                 numPage ={numPage}
                 totalPages= {totalPages}
                 setNumPage={setNumPage}
-                isLoading={isLoading}/>
+                isLoading={isLoading}
+              />
 
             </div>
           </div>
