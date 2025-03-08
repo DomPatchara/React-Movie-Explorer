@@ -76,7 +76,7 @@
     }
 
     & ul li img {
-      @apply w-[180px] h-[210px] rounded-lg object-cover -ml-6 hover:scale-[1.1] cursor-pointer transition-all duration-500;
+      @apply w-[180px] h-[220px] rounded-lg object-center  -ml-6 hover:scale-[1.1] cursor-pointer transition-all duration-500;
     }
   }
 

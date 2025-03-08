@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react'
+import React, { useRef, useState, useEffect, useCallback, useContext } from 'react'
 import Search from './components/Search'
 import { useDebounce } from 'react-use';
 import Switch from './components/Switch';
@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import TrendingMovie from './components/TrendingMovie';
 import apiClient from './API';
 import AllMovies from './components/AllMoives'
+import { MovieContext } from './context/MovieContext';
 
 
 
@@ -24,20 +25,7 @@ const API_OPTIONS = {
 const App = () => {
 
     const [movieList, setMovieList] = useState([]); // set All Movies
-    const [trendingMovies,setTrendingMovies] = useState([]) // set TrendingMovie Top 10
-
-    const [active, setActive] = useState('movie') // Toggle movie <--> tv
-
-    // ---------------- Focus Input Search -------------------- //
-    const searchRef = useRef()
-
-    const focusInput = () => {
-      if (searchRef.current) {
-        searchRef.current.focus();
-      }
-    }
-
-    const [searchTerm, setSearchTerm] = useState('');
+    const { active, searchTerm } = useContext(MovieContext);
 
     // debounce prevent making too many API requests
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
@@ -53,10 +41,15 @@ const App = () => {
     const [totalPages, setTotalPages] = useState()
 
      // handle Select Genrces // 
-    const [isGenres, setIsGenres] = useState(false);
     const [genreId, setGenreId] = useState(null);
     const [genreName, setGenreName] = useState('');
     const [showGenres, setShowGenres] = useState(false);
+
+    // const [genre, setGenre] = useState({
+    //   id: null,
+    //   name: '',
+    //   show: false,
+    // });
   
     const handleSelectGenres = useCallback((numGenreId, name) => {   // useCallback --> ลดการ re-create function โดยไม่จำเป็น
      
@@ -64,7 +57,6 @@ const App = () => {
       setGenreId(numGenreId);
       setGenreName(name);
       setNumPage(1);
-      setIsGenres(true);
       setShowGenres(false);
       setMovieList([]);
     
@@ -152,50 +144,16 @@ const App = () => {
       }
     }
 
-   // ------ Fetch Trending Movie/TV ( New Way ) ---- //
-    const fetchTrending = async () => {
-      setIsLoading(true)
-      setErrorMessage('')
-
-      const endpoint = `/discover/${active}?sort_by=popularity.desc`
-
-      try {
-        const response = await apiClient.get(endpoint);
-        const { data } = response;
-        console.log("Response:", data) 
-        
-        if(!data.results || data.results.length === 0) {
-          throw new Error("No trending movie found!")
-        }
-
-        const Top10 = data.results.slice(0, 10)
-        setTrendingMovies(Top10) // select only 10 Arrays.
-
-      } catch (error) {
-        console.log(`Error fetching movies: ${error}`);
-        setErrorMessage('Error fetching movies. Please try again later.')
-
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    
 
     // ------------------------------------------------------------------------- useEffect ------------------------------------------------------------- //
     useEffect(() => {
-      if (isGenres && genreId) {
+      if (genreName && genreId) {
         fetchByGenres(genreId);
       } else {
         fetchMovies(debouncedSearchTerm);
       }
-    }, [debouncedSearchTerm, numPage, active, genreId])
+    }, [debouncedSearchTerm, numPage, active, genreId, genreName])
 
-    
-
-    useEffect(() => {
-      fetchTrending();
-      setSearchTerm('');
-    } , [active])
 
     return (
       <main>
@@ -205,26 +163,23 @@ const App = () => {
               
               <header>
                 <Navbar
-                  active={active}
-                  setActive={setActive}
                   showGenres={showGenres}
                   setShowGenres={setShowGenres}
                   handleClick = {handleClick}
-                  focusInput={focusInput}
                 />
                 <img src="/hero.png" alt="Hero-banner" className='lg:mt-10'/>
                 <h1>Explore <span className='text-gradient'> Movies & Shows </span> You'll enjoy Without the Fuss</h1>
-                <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} searchRef={searchRef}/>
+                <Search/>
               </header>
 
-              <Switch active={active} setActive={setActive}/>
+              <Switch/>
 
-              <TrendingMovie trendingMovies={trendingMovies} active={active}/>
+              <TrendingMovie />
 
               <AllMovies 
                 movieList={movieList} 
-                active={active} 
-                genreName={genreName} 
+                genreName={genreName}
+                setGenreName = {setGenreName}
                 errorMessage={errorMessage}
                 numPage ={numPage}
                 totalPages= {totalPages}

@@ -1,17 +1,17 @@
-import React, { useEffect} from 'react'
+import React, { useContext, useEffect} from 'react'
 import { useState } from 'react'
 import apiClient from '../API';
+import { MovieContext } from '../context/MovieContext';
 
 
+const Navbar = ({setShowGenres, showGenres, handleClick}) => {
 
 
-
-const Navbar = ({active, setActive,  setShowGenres, showGenres, handleClick, focusInput}) => {
+    const { active, setActive, focusInput } = useContext(MovieContext);
 
 
     // ----------- Fetch All List Genres ----------------------//
     const [genres, setGenres] = useState([]);
-    const [showNavbar, setShowNavbar] = useState(true);
 
     const fetchgenre = async () => {
         const endpoint = `/genre/${active}/list`
@@ -38,7 +38,7 @@ const Navbar = ({active, setActive,  setShowGenres, showGenres, handleClick, foc
 
     // ----------- Set Show/Close Navbar with Scrolling --------------//
     const [lastScroll, setLastScroll] = useState(0)
-
+    const [showNavbar, setShowNavbar] = useState(true);
 
     // useEffect hidding Navbar when "scroll down" 
     useEffect(() => {

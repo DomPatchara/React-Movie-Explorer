@@ -1,11 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Spinner from './Spinner'
 import MovieCard from './MovieCard'
 import NumPages from './NumPages'
 import { useState, useEffect } from 'react'
+import { ImCross } from "react-icons/im";
+import { MovieContext } from '../context/MovieContext'
 
-const AllMoives = ({ movieList, active, genreName, errorMessage, numPage, setNumPage, totalPages, isLoading}) => {
+const AllMoives = ({ movieList, genreName, setGenreName, errorMessage, numPage, setNumPage, totalPages, isLoading}) => {
 
+
+    const { active } = useContext(MovieContext);
 
     // 1. Add Watchlist อาจจะใช้เป็น Post 
     // 2. add function removie gerneName use filter
@@ -38,7 +42,14 @@ const AllMoives = ({ movieList, active, genreName, errorMessage, numPage, setNum
         <div className='flex flex-row items-center gap-9'>
             <h2>{ active === 'movie' ? 'All Movies' : 'TV Shows'}</h2>
         { genreName &&
-            <p className='text-white px-5 py-2 bg-blue-800/50 backdrop-blur-3xl rounded-4xl'>{genreName}</p>
+            <div className='px-6 py-2 bg-blue-800/50 backdrop-blur-3xl rounded-4xl relative'>
+                <p className='text-white'>{genreName}</p>
+                <p 
+                    onClick={() =>setGenreName('')}
+                    className='absolute  p-1 rounded-full right-1.5 top-1 bg-transparent text-gray-600  hover:bg-red-500 cursor-pointer'>
+                        <ImCross size={8}/>
+                </p>
+            </div>
         } 
         </div>
 
@@ -55,7 +66,8 @@ const AllMoives = ({ movieList, active, genreName, errorMessage, numPage, setNum
                 key={movie.id} 
                 movie={movie} 
                 handleAddFavorite={handleAddFavorite} 
-                favoriteMovies={favoriteMovies}/>
+                favoriteMovies={favoriteMovies}
+                active={active}/>
             ))}
             </ul>
         )}

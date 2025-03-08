@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { MovieContext } from '../context/MovieContext'
 
 // Component ที่เปลี่ยน Movies <--> TV Shows
-const Switch = ({active, setActive}) => {
+const Switch = () => {
+  
+  const { active, setActive } = useContext(MovieContext);
 
   return (
     <div className='w-full max-w-50 mx-auto h-10 flex justify-center items-center border-2 border-blue-900 rounded-4xl -translate-y-[130%]'>

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
-const MovieCard = ({ movie, handleAddFavorite, favoriteMovies}) => {
+const MovieCard = ({active,  movie, handleAddFavorite}) => {
 
-        const {title, vote_average, poster_path, release_date, original_language} = movie   // ไม่ต้องใช้ movie.title , movie.release_date
+        const {name, title, vote_average, poster_path, release_date, original_language} = movie   // ไม่ต้องใช้ movie.title , movie.release_date
         
         const [marklist, setMarklist] = useState(false)
 
@@ -27,7 +27,7 @@ const MovieCard = ({ movie, handleAddFavorite, favoriteMovies}) => {
             </div>
 
             <div className='mt-4'>
-                <h3>{title}</h3>
+                <h3>{active ==='movie' ? title : name}</h3>
 
                 <div className='content'>
 

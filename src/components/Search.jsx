@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { MovieContext } from '../context/MovieContext'
 
 
-const Search = ({ searchTerm, setSearchTerm, searchRef}) => {
+const Search = () => {
+
+  const { searchTerm, setSearchTerm, searchRef } = useContext(MovieContext);
 
   return (
     <div className="search">
