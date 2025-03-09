@@ -1,196 +1,22 @@
-import React, { useRef, useState, useEffect, useCallback, useContext } from 'react'
-import Search from './components/Search'
-import { useDebounce } from 'react-use';
-import Switch from './components/Switch';
-import Navbar from './components/Navbar';
-import TrendingMovie from './components/TrendingMovie';
-import apiClient from './API';
-import AllMovies from './components/AllMoives'
-import { MovieContext } from './context/MovieContext';
+import { Routes, Route } from "react-router-dom";
+import React from 'react'
+import Home from './pages/Home'
+import Watchlist from "./pages/Watchlist";
+import NotFound from "./pages/NotFound";
+import Navbar from "./components/Navbar";
 
-
-
-const API_BASE_URL = 'https://api.themoviedb.org/3';
-
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-
-const API_OPTIONS = {
-  method: 'GET',
-  headers: {
-    accept: 'application/json',
-    Authorization: `Bearer ${API_KEY}`
-  }
-}
 
 const App = () => {
+  return (
+    <div>
+      <Navbar/>
+      <Routes>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/watch-list" element={<Watchlist/>}/>
+        <Route path="*" element={<NotFound/>}/>
+      </Routes>
+    </div>
+  )
+}
 
-    const [movieList, setMovieList] = useState([]); // set All Movies
-    const { active, searchTerm } = useContext(MovieContext);
-
-    // debounce prevent making too many API requests
-    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
-    useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]) // ประมาณว่ารอให้ user พิมพ์จบก่อนหลัง 500ms ให้ API request 
-
-    //----------------------------------------------------- //
-
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false); // Loading Page // 
-
-     // ---- Set numpages ------//
-    const [numPage, setNumPage] = useState(1)
-    const [totalPages, setTotalPages] = useState()
-
-     // handle Select Genrces // 
-    const [genreId, setGenreId] = useState(null);
-    const [genreName, setGenreName] = useState('');
-    const [showGenres, setShowGenres] = useState(false);
-
-    // const [genre, setGenre] = useState({
-    //   id: null,
-    //   name: '',
-    //   show: false,
-    // });
-  
-    const handleSelectGenres = useCallback((numGenreId, name) => {   // useCallback --> ลดการ re-create function โดยไม่จำเป็น
-     
-      // Update State
-      setGenreId(numGenreId);
-      setGenreName(name);
-      setNumPage(1);
-      setShowGenres(false);
-      setMovieList([]);
-    
-    }, []);
-    
-    // Check ว่ามีการ re-create function ไหม
-    useEffect(()=>{    
-      console.log(handleSelectGenres);
-    }, [handleSelectGenres])
-
-    const handleClick = async(numGenreId, name) => {
-      await fetchByGenres();
-      handleSelectGenres(numGenreId, name);
-
-      setTimeout(() => {
-        document.getElementById("all-movies")?.scrollIntoView({behavior: "smooth"});
-      }, 500);
-
-    }
-
-
-
-    // ------------------------------------------------------------------Fetch Data ---------------------------------------------------------------------- //
-
-    // ------ Fetch All Movies ( Old Way ) -------//
-    const fetchMovies = async (query) => {
-
-      setIsLoading(true);
-      setErrorMessage('');
-
-      try {
-        const endpoint = query
-        ? `${API_BASE_URL}/search/${active}?query=${encodeURIComponent(query)}&page=${numPage}`   
-        :`${API_BASE_URL}/discover/${active}?sort_by=vote_count.desc&page=${numPage}`;
-
-        const res = await fetch(endpoint, API_OPTIONS);
-        const data = await res.json()
-        console.log(data);
-        
-        if(!res.ok) {    // .ok คือ HTTP response status is in the range of 200-299   ถ้าออกนอกช่วง ( eg. 404, 500 ) ---> res.ok = false ทันที
-          throw new Error('Failed to fetch movies');  // "block" flow or furture execution โค้ดอื่นๆ + throw message error
-        }
-        
-        if(!data.results || data.results.length === 0 ) {
-          setErrorMessage( data.Error || 'Failed to fetch movies');
-          setMovieList([])
-          return;   // stop function ตรงนี้ ถ้า data.response "Failed" 
-        }
-
-        setMovieList(data.results || [])
-        setTotalPages(data.total_pages)
-
-      } catch (error) {
-        console.log(`Error fetching movies: ${error}`);
-        setErrorMessage('Error fetching movies. Please try again later.');
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    // ------ Fetch Movies By GenrcesID ( New Way ) -- //
-    const fetchByGenres = async (genreId) => {
-        setErrorMessage('')
-        setIsLoading(true)
-
-        const endpoint = `/discover/${active}?sort_by=vote_count.desc&page=${numPage}&with_genres=${genreId}`;
-      try {
-        
-        const { data } = await apiClient.get(endpoint)  // await คือรอ Server Response ข้อมูลมา ถึงจะ flow code ต่อ
-        console.log("Response:", data)       // Check Response
-       
-        if (!data.results || data.results.length === 0) {
-          setErrorMessage( data.Error || 'No Genre founded !')
-          setMovieList([])
-          return;
-        }
-
-        setMovieList(data.results)
-        setTotalPages(data.total_pages)
-        
-      } catch(error) {
-        console.log(`Error fetching movies: ${error}`);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-
-    // ------------------------------------------------------------------------- useEffect ------------------------------------------------------------- //
-    useEffect(() => {
-      if (genreName && genreId) {
-        fetchByGenres(genreId);
-      } else {
-        fetchMovies(debouncedSearchTerm);
-      }
-    }, [debouncedSearchTerm, numPage, active, genreId, genreName])
-
-
-    return (
-      <main>
-
-          <div className="pattern ">
-            <div className="wrapper">
-              
-              <header>
-                <Navbar
-                  showGenres={showGenres}
-                  setShowGenres={setShowGenres}
-                  handleClick = {handleClick}
-                />
-                <img src="/hero.png" alt="Hero-banner" className='lg:mt-10'/>
-                <h1>Explore <span className='text-gradient'> Movies & Shows </span> You'll enjoy Without the Fuss</h1>
-                <Search/>
-              </header>
-
-              <Switch/>
-
-              <TrendingMovie />
-
-              <AllMovies 
-                movieList={movieList} 
-                genreName={genreName}
-                setGenreName = {setGenreName}
-                errorMessage={errorMessage}
-                numPage ={numPage}
-                totalPages= {totalPages}
-                setNumPage={setNumPage}
-                isLoading={isLoading}
-              />
-
-            </div>
-          </div>
-      </main>
-    )
-  }
-
-  export default App
+export default App

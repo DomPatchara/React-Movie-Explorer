@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { MovieContext } from '../context/MovieContext'
 
-const NumPages = ({numPage, setNumPage, totalPages}) => {
+const NumPages = () => {
 
+  const {numPage, setNumPage, totalPages} = useContext(MovieContext);
   // Add < 1 2 3 4 ... 7 8 9 10 > 
   return (
     <div className='w-full h-full flex justify-center items-center gap-5'>

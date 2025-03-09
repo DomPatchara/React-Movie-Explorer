@@ -6,38 +6,14 @@ import { useState, useEffect } from 'react'
 import { ImCross } from "react-icons/im";
 import { MovieContext } from '../context/MovieContext'
 
-const AllMoives = ({ movieList, genreName, setGenreName, errorMessage, numPage, setNumPage, totalPages, isLoading}) => {
+const AllMoives = ({ movieList, errorMessage, isLoading}) => {
 
 
-    const { active } = useContext(MovieContext);
+    const { active, genreName, setGenreName } = useContext(MovieContext);
 
-    // 1. Add Watchlist อาจจะใช้เป็น Post 
-    // 2. add function removie gerneName use filter
-    const [favoriteMovies, setFavoriteMovies] = useState([]);
-    
-    const handleAddFavorite = (movie) =>{
-        setFavoriteMovies(prev => {
-
-        // 1. Check ว่าหนังโปรดเราอยู่ใน FavoriteMovies หรือยัง
-        const CheckMoviesInList = prev.some(fav => fav.title === movie.title);
-
-        // 2. Remove : ถ้ามีอยู่แล้วอยู่ ให้ตัดออก
-        if (CheckMoviesInList) {
-            return prev.filter(fav => fav.title !== movie.title)
-        } else {
-        // 3. Add : ถ้าไม่มี ให้แอดเพิ่ม
-            return [...prev, movie];
-        }
-        }
-        )
-    }
-
-    useEffect(() => {
-        console.log("Your Favorite Movies:", favoriteMovies);
-    },[favoriteMovies])
 
   return (
-    <div className='all-movies scroll-mt-10' id='all-movies'>
+    <div className='all-movies scroll-mt-10'>
     
         <div className='flex flex-row items-center gap-9'>
             <h2>{ active === 'movie' ? 'All Movies' : 'TV Shows'}</h2>
@@ -65,14 +41,12 @@ const AllMoives = ({ movieList, genreName, setGenreName, errorMessage, numPage, 
                 <MovieCard 
                 key={movie.id} 
                 movie={movie} 
-                handleAddFavorite={handleAddFavorite} 
-                favoriteMovies={favoriteMovies}
-                active={active}/>
+                />
             ))}
             </ul>
         )}
 
-        <NumPages numPage={numPage} setNumPage={setNumPage} totalPages={totalPages}/>
+        <NumPages/>
 
     </div>
   )

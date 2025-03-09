@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
+import { MovieContext } from '../context/MovieContext'
 
-const MovieCard = ({active,  movie, handleAddFavorite}) => {
+const MovieCard = ({movie}) => {
 
         const {name, title, vote_average, poster_path, release_date, original_language} = movie   // ไม่ต้องใช้ movie.title , movie.release_date
+        const { handleAddFavorite, active } = useContext(MovieContext);
         
         const [marklist, setMarklist] = useState(false)
 
-        const handleWatchlist = () => {
+        const handleWatchlist = (movie) => {
             setMarklist(prev => !prev);
             handleAddFavorite(movie)
         }
@@ -23,7 +25,7 @@ const MovieCard = ({active,  movie, handleAddFavorite}) => {
 
             <div className='absolute top-6 right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"'>
                 <img src={marklist ? '/watchlist-icon-marked.png': '/watchlist-icon.png'} alt="icon"  
-                className='w-12 cursor-pointer hover:opacity-70' onClick={handleWatchlist}/>
+                className='w-12 cursor-pointer hover:opacity-70' onClick={()=>handleWatchlist(movie)}/>
             </div>
 
             <div className='mt-4'>

@@ -17,7 +17,7 @@ const TrendingMovie = () => {
       try {
         const response = await apiClient.get(endpoint);
         const { data } = response;
-        console.log("Response:", data) 
+        console.log("Top 10:", data) 
         
         if(!data.results || data.results.length === 0) {
           throw new Error("No trending movie found!")
