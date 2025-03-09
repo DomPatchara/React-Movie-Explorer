@@ -11,7 +11,6 @@ const AllMoives = ({ movieList, errorMessage, isLoading}) => {
 
     const { active, genreName, setGenreName } = useContext(MovieContext);
 
-
   return (
     <div className='all-movies scroll-mt-10'>
     
@@ -21,7 +20,7 @@ const AllMoives = ({ movieList, errorMessage, isLoading}) => {
             <div className='px-6 py-2 bg-blue-800/50 backdrop-blur-3xl rounded-4xl relative'>
                 <p className='text-white'>{genreName}</p>
                 <p 
-                    onClick={() =>setGenreName('')}
+                    onClick={()=>setGenreName('')}
                     className='absolute  p-1 rounded-full right-1.5 top-1 bg-transparent text-gray-600  hover:bg-red-500 cursor-pointer'>
                         <ImCross size={8}/>
                 </p>

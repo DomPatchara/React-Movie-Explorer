@@ -88,9 +88,15 @@ const Navbar = () => {
     
         {/**---- Nav links------ */}
         <ul className='flex flex-row gap-8 text-lg text-blue-100/50'>
-            <li><a onClick={()=>setCategory('movie')} className={`cursor-pointer hover:text-white ${active === 'movie' ? 'border-b-2 border-white/70 text-white': ''} transition-all duration-100`}>Movies</a></li>
-            <li><a onClick={()=>setCategory('tv')} className={`cursor-pointer hover:text-white ${active === 'tv' ? 'border-b-2 border-white/70 text-white': ''} transition-all duration-100`}>TV Shows</a></li>
-            <li><a onClick={() => setShowAllGenres(!showAllGenres)} className={`cursor-pointer hover:text-white ${showAllGenres ? 'border-b-2 border-white/70 text-white': ''}`} >Genres</a></li>
+            <Link to='/'>
+                <a onClick={()=>setCategory('movie')} className={`cursor-pointer hover:text-white ${active === 'movie' ? 'border-b-2 border-white/70 text-white': ''} transition-all duration-100`}>Movies</a>
+            </Link>
+            <Link to='/'>
+                <a onClick={()=>setCategory('tv')} className={`cursor-pointer hover:text-white ${active === 'tv' ? 'border-b-2 border-white/70 text-white': ''} transition-all duration-100`}>TV Shows</a>
+            </Link>
+            <Link to='/'>
+                <a onClick={() => setShowAllGenres(!showAllGenres)} className={`cursor-pointer hover:text-white ${showAllGenres ? 'border-b-2 border-white/70 text-white': ''}`} >Genres</a>
+            </Link>
         </ul>
 
         {/**--- Genre Side Menus ------ */}

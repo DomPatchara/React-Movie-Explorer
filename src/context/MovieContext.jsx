@@ -77,7 +77,8 @@ const MovieContextProvider = (props) => {
         handleAddFavorite,favoriteMovies,
         numPage,setNumPage,
         totalPages,setTotalPages,
-        genreId,genreName,handleSelectGenres
+        genreId,genreName,setGenreName,
+        handleSelectGenres
     }
 
     return (
