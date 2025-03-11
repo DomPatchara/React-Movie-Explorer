@@ -56,27 +56,31 @@
     @apply bg-hero-pattern w-screen h-screen bg-center bg-cover absolute z-0;
   }
 
-  .wrapper {
-    @apply px-5 py-12 xs:p-10 max-w-7xl mx-auto flex flex-col relative z-10;
+  .container {
+    @apply px-5 py-10 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] max-w-7xl mx-auto flex flex-col relative z-10;
   }
 
   .trending {
     @apply mt-1;
 
     & ul {
-      @apply flex flex-row overflow-x-auto gap-10 -mt-10 w-full hide-scrollbar ;
+      @apply flex flex-row overflow-x-auto overflow-y-hidden gap-10 -mt-10 w-full hide-scrollbar ;
     }
 
     & ul li {
-      @apply min-w-[230px] flex flex-row items-center;
+      @apply min-w-[230px] flex flex-row items-center relative;
     }
 
     & ul li p {
-      @apply fancy-text mt-[22px] text-nowrap;
+      @apply fancy-text mt-5  text-nowrap absolute -z-20 ;
     }
 
     & ul li img {
-      @apply w-[180px] h-[220px] rounded-lg object-center  -ml-6 hover:scale-[1.1] cursor-pointer transition-all duration-500;
+      @apply w-[180px] h-[220px] rounded-lg object-center ml-14 hover:scale-[1.1] cursor-pointer transition-all duration-500 mt-12 my-7 z-20;
+    }
+
+    & ul li:last-child img {
+      @apply ml-31;
     }
   }
 

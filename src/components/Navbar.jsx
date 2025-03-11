@@ -82,22 +82,22 @@ const Navbar = () => {
     <nav className={`w-full px-5 sm:px-[15%] py-2 fixed top-0 right-0 flex flex-row justify-between items-center backdrop-blur-md z-50 ${showNavbar ? 'opacity-100' : 'opacity-0'} duration-300` }>
         
         {/**--- Logo ------ */}
-        <a href="/" className='cursor-pointer'>
+        <a href='/' className='cursor-pointer'>
             <img src='/logo.png' className='w-10 hover:scale-[1.1] duration-300'/>    
         </a>
     
         {/**---- Nav links------ */}
-        <ul className='flex flex-row gap-8 text-lg text-blue-100/50'>
+        <div className='flex flex-row gap-8 text-lg text-blue-100/50'>
             <Link to='/'>
-                <a onClick={()=>setCategory('movie')} className={`cursor-pointer hover:text-white ${active === 'movie' ? 'border-b-2 border-white/70 text-white': ''} transition-all duration-100`}>Movies</a>
+                <p onClick={()=>setCategory('movie')} className={`cursor-pointer hover:text-white ${active === 'movie' ? 'border-b-2 border-white/70 text-white': ''} transition-all duration-100`}>Movies</p>
             </Link>
             <Link to='/'>
-                <a onClick={()=>setCategory('tv')} className={`cursor-pointer hover:text-white ${active === 'tv' ? 'border-b-2 border-white/70 text-white': ''} transition-all duration-100`}>TV Shows</a>
+                <p onClick={()=>setCategory('tv')} className={`cursor-pointer hover:text-white ${active === 'tv' ? 'border-b-2 border-white/70 text-white': ''} transition-all duration-100`}>TV Shows</p>
             </Link>
             <Link to='/'>
-                <a onClick={() => setShowAllGenres(!showAllGenres)} className={`cursor-pointer hover:text-white ${showAllGenres ? 'border-b-2 border-white/70 text-white': ''}`} >Genres</a>
+                <p onClick={() => setShowAllGenres(!showAllGenres)} className={`cursor-pointer hover:text-white ${showAllGenres ? 'border-b-2 border-white/70 text-white': ''}`} >Genres</p>
             </Link>
-        </ul>
+        </div>
 
         {/**--- Genre Side Menus ------ */}
         <div className={`absolute top-0 left-0 h-screen w-2/4 md:w-1/4 md:px-10 lg:px-20 px-8 py-4 bg-blue-900 ${showAllGenres ? 'translate-x-0': '-translate-x-[100%]'} transition-all duration-500 z-10 flex justify-center`}>

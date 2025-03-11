@@ -5,7 +5,9 @@ import App from './App.jsx'
 import MovieContextProvider from './context/MovieContext.jsx'
 
 createRoot(document.getElementById('root')).render(
-    <BrowserRouter>
+    <BrowserRouter
+        future={{ v7_startTransition: false, v7_relativeSplatPath: false }}
+    >
         <MovieContextProvider>
             <App />
         </MovieContextProvider>

@@ -6,9 +6,11 @@ export const MovieContext = createContext();
 
 const MovieContextProvider = (props) => {
 
+    const [movieList, setMovieList] = useState([]); // set All Movies
     const [active, setActive] = useState('movie') // Toggle movie <--> tv
     const [searchTerm, setSearchTerm] = useState('');
     const [favoriteMovies, setFavoriteMovies] = useState([]);
+    const [trendingMovies, setTrendingMovies] = useState([]);
 
 
     // ---------------- Focus Input Search -------------------- //
@@ -78,7 +80,9 @@ const MovieContextProvider = (props) => {
         numPage,setNumPage,
         totalPages,setTotalPages,
         genreId,genreName,setGenreName,
-        handleSelectGenres
+        handleSelectGenres,
+        trendingMovies,setTrendingMovies,
+        movieList,setMovieList
     }
 
     return (

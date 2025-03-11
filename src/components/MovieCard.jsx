@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { MovieContext } from '../context/MovieContext'
+import { Link } from 'react-router-dom';
 
 const MovieCard = ({movie}) => {
 
@@ -17,6 +18,7 @@ const MovieCard = ({movie}) => {
 
   return (
 
+     <Link to={`/movie/${movie.id}`}>
         <div className='movie-card hover:-translate-y-2.5 duration-200 relative group'>
             <img 
                 src={poster_path ? `https://image.tmdb.org/t/p/w500${poster_path}`: '/no-movie.png'} 
@@ -26,6 +28,7 @@ const MovieCard = ({movie}) => {
             <div className='absolute top-6 right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"'>
                 <img src={marklist ? '/watchlist-icon-marked.png': '/watchlist-icon.png'} alt="icon"  
                 className='w-12 cursor-pointer hover:opacity-70' onClick={()=>handleWatchlist(movie)}/>
+                                                                                
             </div>
 
             <div className='mt-4'>
@@ -48,6 +51,7 @@ const MovieCard = ({movie}) => {
             </div>
 
          </div>
+      </Link>
     )
 }
 

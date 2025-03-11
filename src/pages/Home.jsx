@@ -23,9 +23,8 @@ const API_OPTIONS = {
 }
 
 const App = () => {
-
-    const [movieList, setMovieList] = useState([]); // set All Movies
-    const { active, searchTerm, numPage, genreId, setTotalPages } = useContext(MovieContext);
+  
+    const { active, searchTerm, numPage, genreId, setTotalPages, genreName, movieList, setMovieList  } = useContext(MovieContext);
 
     // debounce prevent making too many API requests
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
@@ -105,40 +104,31 @@ const App = () => {
 
     // ------------------------------------------------------------------------- useEffect ------------------------------------------------------------- //
     useEffect(() => {
-      if (genreId) {
+      if (genreName && genreId) {
         fetchByGenres(genreId);
       } else {
         fetchMovies(debouncedSearchTerm);
       }
-    }, [debouncedSearchTerm, numPage, active, genreId])
+    }, [debouncedSearchTerm, numPage, active, genreId, genreName])
 
 
     return (
-      <main>
+      <div>     
+        <header>
+          <img src="/hero.png" alt="Hero-banner" className='lg:mt-10'/>
+          <h1>Explore <span className='text-gradient'> Movies & Shows </span> You'll enjoy Without the Fuss</h1>
+          <Search/>
+        </header>
 
-          <div className="pattern ">
-            <div className="wrapper">
-              
-              <header>
-                <img src="/hero.png" alt="Hero-banner" className='lg:mt-10'/>
-                <h1>Explore <span className='text-gradient'> Movies & Shows </span> You'll enjoy Without the Fuss</h1>
-                <Search/>
-              </header>
+        <Switch/>
 
-              <Switch/>
+        <TrendingMovie />
 
-              <TrendingMovie />
-
-              <AllMovies 
-                movieList={movieList} 
-                errorMessage={errorMessage}
-                isLoading={isLoading}
-              />
-
-            </div>
-          </div>
-          
-      </main>
+        <AllMovies 
+          errorMessage={errorMessage}
+          isLoading={isLoading}
+        />    
+      </div>
     )
   }
 

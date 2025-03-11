@@ -6,10 +6,10 @@ import { useState, useEffect } from 'react'
 import { ImCross } from "react-icons/im";
 import { MovieContext } from '../context/MovieContext'
 
-const AllMoives = ({ movieList, errorMessage, isLoading}) => {
+const AllMoives = ({errorMessage, isLoading}) => {
 
 
-    const { active, genreName, setGenreName } = useContext(MovieContext);
+    const { active, genreName, setGenreName, movieList } = useContext(MovieContext);
 
   return (
     <div className='all-movies scroll-mt-10'>

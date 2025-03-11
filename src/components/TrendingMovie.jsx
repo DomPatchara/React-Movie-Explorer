@@ -2,11 +2,11 @@ import React, { useContext, useEffect } from 'react'
 import { MovieContext } from '../context/MovieContext';
 import { useState } from 'react';
 import apiClient from '../API';
+import { Link } from 'react-router-dom';
 
 const TrendingMovie = () => {
 
-      const { active } = useContext(MovieContext);
-      const [trendingMovies, setTrendingMovies] = useState([]);
+      const { active, trendingMovies, setTrendingMovies } = useContext(MovieContext);
 
 
      // ------ Fetch Trending Movie/TV ( New Way ) ---- //
@@ -38,7 +38,7 @@ const TrendingMovie = () => {
   return (
     <div>
         {trendingMovies.length > 0 && (
-                <section className='trending scroll-mt-30' id='trending'>
+                <section className='trending scroll-mt-30'>
                   
                   <h2 className='flex mb-5 gap-5'>
                     {active === 'movie' ? 'Trending Movies' : 'Trending TV Shows'}
@@ -47,8 +47,10 @@ const TrendingMovie = () => {
                   <ul>
                     {trendingMovies.map((movie, i) => (
                       <li key={movie.id}>
-                        <p>{i + 1}</p>
-                        <img src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} alt={movie.title} />
+                        <Link  to={`/movie/${movie.id}`}>
+                          <p>{i + 1}</p>
+                          <img src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} alt={movie.title} />
+                        </Link>                        
                       </li>
                     ))}
                   </ul>
