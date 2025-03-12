@@ -100,7 +100,7 @@ const Navbar = () => {
         </div>
 
         {/**--- Genre Side Menus ------ */}
-        <div className={`absolute top-0 left-0 h-screen w-2/4 md:w-1/4 md:px-10 lg:px-20 px-8 py-4 bg-blue-900 ${showAllGenres ? 'translate-x-0': '-translate-x-[100%]'} transition-all duration-500 z-10 flex justify-center`}>
+        <div className={`absolute top-0 left-0 h-screen w-2/4 md:w-1/4 md:px-10 lg:px-20 px-8 py-4 bg-blue-900 opacity-95 inset-shadow-half ${showAllGenres ? 'translate-x-0': '-translate-x-[100%]'} transition-all duration-500 z-10 flex justify-center`}>
             <ul className='flex flex-col gap-3 mt-1 overflow-auto hide-scrollbar'>
                 {genres.map((genre, i)=>(
                     <li key={i}>

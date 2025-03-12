@@ -19,6 +19,8 @@
   --breakpoint-xs: 480px;
 
   --background-image-hero-pattern: url("/hero-bg.png");
+
+  --inset-shadow-half: inset 300px 0px 200px rgba(0, 0, 0, 1)
 }
 
 
