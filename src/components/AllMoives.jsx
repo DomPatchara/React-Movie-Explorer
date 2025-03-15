@@ -2,7 +2,6 @@ import React, { useContext } from 'react'
 import Spinner from './Spinner'
 import MovieCard from './MovieCard'
 import NumPages from './NumPages'
-import { useState, useEffect } from 'react'
 import { ImCross } from "react-icons/im";
 import { MovieContext } from '../context/MovieContext'
 
