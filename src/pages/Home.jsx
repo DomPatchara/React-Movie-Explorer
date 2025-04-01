@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react'
-import Search from '../components/Search'
 import { useDebounce } from 'react-use';
 import Switch from '../components/Switch';
-import Navbar from '../components/Navbar';
 import TrendingMovie from '../components/TrendingMovie';
-import apiClient from '../API';
+import apiClient from '../API'; // New Fetch
 import AllMovies from '../components/AllMoives'
 import { MovieContext } from '../context/MovieContext';
+import NumPages from '../components/NumPages'
+import Hero from '../components/Hero';
 
 
-
+// Fetch ( Old Way ) 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const API_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhMTVjM2YyNDFjMDY3M2FlZDEwMmI4YTJmZWE3YWZjOSIsIm5iZiI6MTczOTc3OTE2OS42LCJzdWIiOiI2N2IyZWM2MWFhYWMzYjE2NzRlMGRkODYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.V3QecxsQxxNUAAsmrZHDql_heYW9b4OGYLnsOFru-o0"
+                //import.meta.env.VITE_TMDB_API_KEY;
 
 const API_OPTIONS = {
   method: 'GET',
@@ -24,17 +25,11 @@ const API_OPTIONS = {
 
 const App = () => {
   
-    const { active, searchTerm, numPage, genreId, setTotalPages, genreName, movieList, setMovieList  } = useContext(MovieContext);
+    const { active, searchTerm, numPage, genreId, setTotalPages, genreName,  setMovieList, setErrorMessage, setIsLoading  } = useContext(MovieContext);
 
     // debounce prevent making too many API requests
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
     useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]) // ประมาณว่ารอให้ user พิมพ์จบก่อนหลัง 500ms ให้ API request 
-
-    //----------------------------------------------------- //
-
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false); // Loading Page // 
-
 
     // ------------------------------------------------------------------Fetch Data ---------------------------------------------------------------------- //
 
@@ -114,20 +109,11 @@ const App = () => {
 
     return (
       <div>     
-        <header>
-          <img src="/hero.png" alt="Hero-banner" className='lg:mt-10'/>
-          <h1>Explore <span className='text-gradient'> Movies & Shows </span> You'll enjoy Without the Fuss</h1>
-          <Search/>
-        </header>
-
+        <Hero/>
         <Switch/>
-
         <TrendingMovie />
-
-        <AllMovies 
-          errorMessage={errorMessage}
-          isLoading={isLoading}
-        />    
+        <AllMovies/>
+        <NumPages/>
       </div>
     )
   }

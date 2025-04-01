@@ -12,6 +12,9 @@ const MovieContextProvider = (props) => {
     const [favoriteMovies, setFavoriteMovies] = useState([]);
     const [trendingMovies, setTrendingMovies] = useState([]);
 
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false); // Loading Page //
+
 
     // ---------------- Focus Input Search -------------------- //
     const searchRef = useRef()
@@ -82,7 +85,9 @@ const MovieContextProvider = (props) => {
         genreId,genreName,setGenreName,
         handleSelectGenres,
         trendingMovies,setTrendingMovies,
-        movieList,setMovieList
+        movieList,setMovieList,
+        errorMessage,setErrorMessage,
+        isLoading,setIsLoading
     }
 
     return (

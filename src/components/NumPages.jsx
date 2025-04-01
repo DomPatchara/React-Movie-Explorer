@@ -6,7 +6,7 @@ const NumPages = () => {
   const {numPage, setNumPage, totalPages} = useContext(MovieContext);
   // Add < 1 2 3 4 ... 7 8 9 10 > 
   return (
-    <div className='w-full h-full flex justify-center items-center gap-5'>
+    <div className='w-full h-full flex justify-center items-center gap-5 py-10'>
         <p className='text-gray-200 absolute left-[25%]'> Page {numPage} of {totalPages}</p>
         
         { numPage !== 1 && 

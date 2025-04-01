@@ -1,14 +1,13 @@
 import React, { useContext } from 'react'
 import Spinner from './Spinner'
 import MovieCard from './MovieCard'
-import NumPages from './NumPages'
 import { ImCross } from "react-icons/im";
 import { MovieContext } from '../context/MovieContext'
 
-const AllMoives = ({errorMessage, isLoading}) => {
+const AllMoives = () => {
 
 
-    const { active, genreName, setGenreName, movieList } = useContext(MovieContext);
+    const { active, genreName, setGenreName, movieList, errorMessage, isLoading } = useContext(MovieContext);
 
   return (
     <div className='all-movies scroll-mt-10'>
@@ -43,8 +42,6 @@ const AllMoives = ({errorMessage, isLoading}) => {
             ))}
             </ul>
         )}
-
-        <NumPages/>
 
     </div>
   )

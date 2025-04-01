@@ -4,7 +4,7 @@ import Home from './pages/Home'
 import Watchlist from "./pages/Watchlist";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
-import Movie from "./pages/Movie";
+import MovieTrailer from "./pages/MovieTrailer";
 
 
 const App = () => {
@@ -15,7 +15,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home/>}/>
           <Route path="/watch-list" element={<Watchlist/>}/>
-          <Route path="/movie/:movieId" element={<Movie/>}/>
+          <Route path="/movie/:movieId" element={<MovieTrailer/>}/>
           <Route path="*" element={<NotFound/>}/>
         </Routes>
       </div>
