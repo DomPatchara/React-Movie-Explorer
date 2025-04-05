@@ -2,9 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import apiClient from "../API";
 import { MovieContext } from "../context/MovieContext";
+import Spinner from "../components/Spinner";
 
 const MovieTrailer = () => {
-  const { active, movieList, trendingMovies } = useContext(MovieContext);
+  const { active, movieList, trendingMovies, isLoading, setIsLoading, errorMessage, setErrorMessage } =
+    useContext(MovieContext);
   const { movieId } = useParams();
   const [videos, setVideos] = useState([]);
   const [movieName, setMovieName] = useState("");
@@ -29,6 +31,9 @@ const MovieTrailer = () => {
 
   // ---- Fetch Movie Video --------//
   const fetchMovieVideo = async () => {
+    setIsLoading(true);
+    setErrorMessage('');
+
     const endpoint =
       active === "movie" ? `/movie/${movieId}/videos` : `/tv/${movieId}/videos`;
 
@@ -36,44 +41,69 @@ const MovieTrailer = () => {
       const { data } = await apiClient.get(endpoint);
       console.log("video:", data);
       setVideos(data.results.slice(0, 4)); // select only 4 videos
+
+      if(videos.length === 0 || !videos) {
+        setErrorMessage('No video trailer available :(')
+      }
     } catch (err) {
       console.error("Error fetch Video:", err);
+      setErrorMessage('No video trailer available :(')
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchMovieVideo();
+    const fetchAndDelay = async () => {
+      // Fetch data
+      await fetchMovieVideo();
+
+      // Wait for 2 seconds before showing the component
+      setTimeout(() => {
+        // Now you can update your component state here (if needed)
+        setIsLoading(false); // Set loading to false after delay
+      }, 2000); // 2 seconds delay
+    };
+
+    fetchAndDelay();
     console.log("movieId:", movieId);
   }, [movieId]);
 
   return (
-    videos.length > 0 ? (
-      <div>
-        <div className="mt-10 mb-5">
-          <h1>
-            {movieName} : <span className="text-gradient">Trailers</span>
-          </h1>
+    <>
+      {isLoading ? (
+        <div className="w-full h-screen flex justify-center items-center">
+          <Spinner/>
         </div>
-  
-        <div className="w-full flex flex-row overflow-x-scroll hide-scrollbar items-center space-x-4">
-          {videos.map((video, index) => (
-            <div key={index}>
-              <iframe
-                className="w-100 h-64 sm:w-128 md:w-160 md:h-120 lg:w-256 lg:h-128 rounded-3xl"
-                src={`https://www.youtube.com/embed/${video.key}`}
-                allowFullScreen
-              ></iframe>
-            </div>
-          ))}
+      ) : errorMessage ? (
+        <div className="flex flex-col py-16">
+          <h1 className="text-3xl text-white">"{movieName}"</h1>
+          <p className="text-3xl text-red-500 font-bold mx-auto">
+            {errorMessage}
+          </p>
         </div>
-      </div>
-    ) : (
-      <div className="flex flex-col py-16">
-        <h1 className="text-3xl text-white">"{movieName}"</h1>
-        <p className="text-3xl text-red-500 font-bold mx-auto">No video trailer available :(</p>
-      </div>
-    )
-  );
-}
+      ) : (
+        <div>
+          <div className="mt-10 mb-5">
+            <h1>
+              {movieName} : <span className="text-gradient">Trailers</span>
+            </h1>
+          </div>
 
+          <div className="w-full flex flex-row overflow-x-scroll hide-scrollbar items-center space-x-4">
+            {videos.map((video, index) => (
+              <div key={index}>
+                <iframe
+                  className="w-100 h-64 sm:w-128 md:w-160 md:h-120 lg:w-256 lg:h-128 rounded-3xl"
+                  src={`https://www.youtube.com/embed/${video.key}`}
+                  allowFullScreen
+                ></iframe>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
 export default MovieTrailer;

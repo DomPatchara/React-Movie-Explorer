@@ -31,7 +31,7 @@ const MovieCard = ({movie}) => {
             />
         </Link>
 
-        <div className='absolute top-6 right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"'>
+        <div className='absolute bottom-7 right-7 lg:top-6 lg:right-5  lg:opacity-0 group-hover:opacity-100 transition-opacity duration-300"'>
             {location.pathname === '/watch-list' 
             ? ( 
                 <div className='group/icon relative'>

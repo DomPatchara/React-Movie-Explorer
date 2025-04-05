@@ -143,17 +143,18 @@ const Navbar = () => {
         </div>
 
         {/**--- Genre Side Menus ------ */}
-        <div className={`absolute top-0 left-0 h-screen w-70 md:w-1/4 md:px-10 lg:px-20 px-8 py-4 bg-blue-900 inset-shadow-half ${showAllGenres ? 'translate-x-0': '-translate-x-[100%]'} transition-all duration-500 z-10 flex justify-center`}>
-            <ul className='flex flex-col gap-3 mt-1 overflow-auto hide-scrollbar'>
+        <div className={`absolute top-0 left-0 h-screen w-70 md:w-[35%] py-4 bg-blue-900 inset-shadow-half ${showAllGenres ? 'translate-x-0': '-translate-x-[100%]'} transition-all duration-500 z-10 flex justify-center`}>
+            <ul className='flex flex-col gap-3 mt-1 overflow-auto hide-scrollbar '>
                 {genres.map((genre, i)=>(
                     <li key={i}>
                         <a  
-                            className='text-2xl  text-blue-100/80 whitespace-nowrap cursor-pointer hover:text-white md:text-[18px]'
+                            className='text-2xl  text-blue-100/80 whitespace-nowrap cursor-pointer hover:text-white md:text-2xl'
                             onClick={() => {handleSelectGenres(genre.id, genre.name);
                                             setShowAllGenres(false);
                             }}
                         >
                             {genre.name}
+                            <hr  className='text-gray-900/70'/>
                         </a>
                     </li>
                 ))}
