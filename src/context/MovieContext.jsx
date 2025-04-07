@@ -11,6 +11,7 @@ const MovieContextProvider = (props) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [favoriteMovies, setFavoriteMovies] = useState([]);
     const [trendingMovies, setTrendingMovies] = useState([]);
+    const [showMessage, setShowMessage] = useState(false);
 
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false); // Loading Page //
@@ -27,6 +28,7 @@ const MovieContextProvider = (props) => {
 
     // -------------- Set Favorite Movies ---------------------//
     const handleAddFavorite = (movie) =>{
+
         setFavoriteMovies(prev => {
 
         // 1. Check ว่าหนังโปรดเราอยู่ใน FavoriteMovies หรือยัง
@@ -36,10 +38,17 @@ const MovieContextProvider = (props) => {
         if (CheckMoviesInList) {
             return prev.filter(fav => fav.title !== movie.title)
         } else {
+            // show message notification added !
+            setTimeout(()=>{
+                setShowMessage(true);
+                setTimeout(()=>setShowMessage(false),2000)
+            }, 0); // delay 0s
+            
         // 3. Add : ถ้าไม่มี ให้แอดเพิ่ม
             return [...prev, movie];
         }
     })
+
     }
 
     useEffect(()=>{
@@ -87,7 +96,8 @@ const MovieContextProvider = (props) => {
         trendingMovies,setTrendingMovies,
         movieList,setMovieList,
         errorMessage,setErrorMessage,
-        isLoading,setIsLoading
+        isLoading,setIsLoading,
+        showMessage
     }
 
     return (

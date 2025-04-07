@@ -40,11 +40,14 @@ const MovieTrailer = () => {
     try {
       const { data } = await apiClient.get(endpoint);
       console.log("video:", data);
-      setVideos(data.results.slice(0, 4)); // select only 4 videos
 
-      if(videos.length === 0 || !videos) {
+      if(data.results.length === 0) {
         setErrorMessage('No video trailer available :(')
+      } else {
+        setVideos(data.results.slice(0, 4)); // select only 4 videos
       }
+
+
     } catch (err) {
       console.error("Error fetch Video:", err);
       setErrorMessage('No video trailer available :(')
@@ -53,20 +56,11 @@ const MovieTrailer = () => {
     }
   };
 
+
   useEffect(() => {
-    const fetchAndDelay = async () => {
-      // Fetch data
-      await fetchMovieVideo();
-
-      // Wait for 2 seconds before showing the component
-      setTimeout(() => {
-        // Now you can update your component state here (if needed)
-        setIsLoading(false); // Set loading to false after delay
-      }, 2000); // 2 seconds delay
-    };
-
-    fetchAndDelay();
+    fetchMovieVideo();
     console.log("movieId:", movieId);
+    console.log("video", videos)
   }, [movieId]);
 
   return (

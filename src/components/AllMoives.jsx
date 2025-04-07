@@ -7,7 +7,7 @@ import { MovieContext } from '../context/MovieContext'
 const AllMoives = () => {
 
 
-    const { active, genreName, setGenreName, movieList, errorMessage, isLoading } = useContext(MovieContext);
+    const {  active, genreName, setGenreName, movieList, errorMessage, isLoading } = useContext(MovieContext);
 
   return (
     <div className='all-movies scroll-mt-10'>
