@@ -1,5 +1,5 @@
 # Movie-Explorer (React)
-Learning create UI pages with some functions and fetching-API from The Movie Dataิase (TMDB) , find your favorite movie.
+Learning create UI pages with some functions and fetching-API from The Movie Database (TMDB) , find your favorite movie.
 
 ## 🛍️ Features
 - **Search for Movies**: Find any movie by name.
