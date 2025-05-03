@@ -8,12 +8,11 @@ import { MovieContext } from "../context/MovieContext";
 import NumPages from "../components/NumPages";
 import Hero from "../components/Hero";
 
-// Fetch ( Old Way )
+// Fetch ( Simple Way )
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
-const API_KEY =
-  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhMTVjM2YyNDFjMDY3M2FlZDEwMmI4YTJmZWE3YWZjOSIsIm5iZiI6MTczOTc3OTE2OS42LCJzdWIiOiI2N2IyZWM2MWFhYWMzYjE2NzRlMGRkODYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.V3QecxsQxxNUAAsmrZHDql_heYW9b4OGYLnsOFru-o0";
-//import.meta.env.VITE_TMDB_API_KEY;
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY
+  
 
 const API_OPTIONS = {
   method: "GET",
@@ -43,7 +42,7 @@ const App = () => {
 
   // ------------------------------------------------------------------Fetch Data ---------------------------------------------------------------------- //
 
-  // ------ Fetch All Movies ( Old Way ) -------//
+  // ------ Fetch All Movies ( Simple Way  ) -------//
   const fetchMovies = async (query) => {
     setIsLoading(true);
     setErrorMessage("");
@@ -80,7 +79,7 @@ const App = () => {
     }
   };
 
-  // ------ Fetch Movies By GenrcesID ( New Way ) -- //
+  // ------ Fetch Movies By GenrcesID ( New Way with Axios intercept ) -- //
   const fetchByGenres = async (genreId) => {
     setErrorMessage("");
     setIsLoading(true);
@@ -88,7 +87,7 @@ const App = () => {
     const endpoint = `/discover/${active}?sort_by=vote_count.desc&page=${numPage}&with_genres=${genreId}`;
     try {
       const { data } = await apiClient.get(endpoint); // await คือรอ Server Response ข้อมูลมา ถึงจะ flow code ต่อ
-      console.log("Responsegen:", data); // Check Response
+      console.log("Response:", data); // Check Response
 
       if (!data.results || data.results.length === 0) {
         setErrorMessage(data.Error || "No Genre founded !");
